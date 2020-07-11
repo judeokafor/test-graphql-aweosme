@@ -6,7 +6,7 @@ const PORT = process.env.PORT || 5555;
 // Add your subscriptions
 
 const app: Server = express();
-app.get('/', (_: Request, res: Response) => {
+app.get('/test', (_: Request, res: Response) => {
 	res.send('Success, welcome');
 });
 // const router = express.Router();

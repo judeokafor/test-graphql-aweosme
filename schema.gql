@@ -3,8 +3,32 @@
 # !!!   DO NOT MODIFY THIS FILE BY YOURSELF   !!!
 # -----------------------------------------------
 
+input EditUserInput {
+  email: String!
+  username: String!
+}
+
+type Mutation {
+  createPropertyListing(input: PropertyListingInput!): PropertyListing!
+  createUser(input: UserInput!): User!
+  editUser(id: String!, input: EditUserInput!): User!
+}
+
+"""The PropertyListing model"""
+type PropertyListing {
+  id: ID!
+  name: String!
+  owners: [User!]!
+}
+
+input PropertyListingInput {
+  name: String!
+  owners: [ID!]!
+}
+
 type Query {
-  returnAllUser: [User!]!
+  returnAllPropertyListing: [PropertyListing!]!
+  returnAllUser: [User!]
   returnSingleUser(id: String!): User!
 }
 
@@ -12,5 +36,11 @@ type Query {
 type User {
   email: String!
   id: ID!
+  username: String!
+}
+
+input UserInput {
+  email: String!
+  role: String = "student"
   username: String!
 }
