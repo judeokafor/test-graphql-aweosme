@@ -4,14 +4,39 @@ import { prop as Property, getModelForClass } from '@typegoose/typegoose';
 @ObjectType({ description: 'The User model' })
 export class User {
 	@Field(() => ID)
-	id: number;
+	@Property({ required: false })
+	id: string;
 
 	@Field()
-	@Property({ required: true })
-	username: string;
-
-	@Field()
-	@Property({ required: true })
+	@Property({ required: true, trim: true })
 	email: string;
+
+	@Field()
+	@Property({ required: true, trim: true })
+	firstName: string;
+
+	@Field()
+	@Property({ required: false, trim: true })
+	lastName: string;
+
+	@Field()
+	@Property({ required: true, trim: true })
+	phoneNumber: string;
+
+	@Field()
+	@Property({ required: true })
+	password: string;
+
+	@Field(() => Boolean)
+	@Property()
+	isAdmin = false;
+
+	@Field(() => ID)
+	@Property({ required: true })
+	uid: string;
+
+	@Field({ nullable: true })
+	@Property({ required: true, unique: true })
+	token: string;
 }
 export const UserModel = getModelForClass(User);
