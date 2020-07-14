@@ -4,14 +4,24 @@
 # -----------------------------------------------
 
 input EditUserInput {
+  firstName: String
+  lastName: String
+  phoneNumber: String
+}
+
+input LoginInput {
   email: String!
-  username: String!
+  password: String!
 }
 
 type Mutation {
   createPropertyListing(input: PropertyListingInput!): PropertyListing!
-  createUser(input: UserInput!): User!
   editUser(id: String!, input: EditUserInput!): User!
+  registerUser(input: RegisterUserInput!): User!
+  requestResetPassword(email: String!): User!
+  resetPassword(input: ResetPasswordInput!): User!
+  signInUser(input: LoginInput!): User!
+  signOut(id: String!): User!
 }
 
 """The PropertyListing model"""
@@ -32,15 +42,29 @@ type Query {
   returnSingleUser(id: String!): User!
 }
 
+input RegisterUserInput {
+  email: String!
+  firstName: String!
+  isAdmin: String = "false"
+  lastName: String
+  password: String!
+  phoneNumber: String
+}
+
+input ResetPasswordInput {
+  newPassword: String!
+  resetPasswordCode: String!
+}
+
 """The User model"""
 type User {
   email: String!
+  firstName: String!
   id: ID!
-  username: String!
-}
-
-input UserInput {
-  email: String!
-  role: String = "student"
-  username: String!
+  isAdmin: Boolean!
+  lastName: String!
+  password: String!
+  phoneNumber: String!
+  token: String
+  uid: ID!
 }
