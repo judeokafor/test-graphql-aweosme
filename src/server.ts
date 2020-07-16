@@ -2,6 +2,7 @@ import { ApolloServer } from 'apollo-server-express';
 import 'reflect-metadata';
 import { buildSchema } from 'type-graphql';
 import { connect } from 'mongoose';
+import { authChecker } from './shared/auth-checker';
 
 // resolvers
 import resolvers from './graphql';
@@ -11,6 +12,7 @@ const graphQlServer = async (app: any) => {
 		resolvers,
 		emitSchemaFile: true,
 		validate: false,
+		authChecker,
 	});
 
 	// create mongoose connection
