@@ -8,6 +8,9 @@ export class RegisterUserInput implements Partial<User> {
 	@Length(3, 25)
 	firstName: string;
 
+	@Field()
+	authoId: string;
+
 	@Field({ nullable: true })
 	@Length(3, 25)
 	lastName: string;
@@ -16,10 +19,7 @@ export class RegisterUserInput implements Partial<User> {
 	@IsEmail()
 	email: string;
 
-	@Field()
-	password: string;
-
-	@Field({ nullable: true })
+	@Field({ nullable: false })
 	@IsPhoneNumber('NG')
 	phoneNumber: string;
 

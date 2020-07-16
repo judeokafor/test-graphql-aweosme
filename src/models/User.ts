@@ -7,7 +7,7 @@ export class User {
 	@Property({ required: false })
 	id: string;
 
-	@Field()
+	@Field({ nullable: true })
 	@Property({ required: true, trim: true })
 	email: string;
 
@@ -23,20 +23,12 @@ export class User {
 	@Property({ required: true, trim: true })
 	phoneNumber: string;
 
-	@Field()
-	@Property({ required: true })
-	password: string;
-
 	@Field(() => Boolean)
 	@Property()
 	isAdmin = false;
 
 	@Field(() => ID)
 	@Property({ required: true })
-	uid: string;
-
-	@Field({ nullable: true })
-	@Property({ required: true, unique: true })
-	token: string;
+	authoId: string;
 }
 export const UserModel = getModelForClass(User);
