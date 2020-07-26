@@ -1,8 +1,11 @@
 import { ApolloServer } from 'apollo-server-express';
+import { graphqlUploadExpress } from 'graphql-upload';
 import 'reflect-metadata';
 import { buildSchema } from 'type-graphql';
 import { connect } from 'mongoose';
-import { authChecker } from './shared/auth-checker';
+import shared from './shared';
+
+const { authChecker } = shared.authChecker;
 
 // resolvers
 import resolvers from './graphql';
@@ -26,10 +29,12 @@ const graphQlServer = async (app: any) => {
 
 	const server = new ApolloServer({
 		context: ({ req, res }) => ({ req, res }),
+		uploads: false,
 		schema,
 		introspection: true,
 		playground: true,
 	});
+	app.use(graphqlUploadExpress({ maxFileSize: 10000000, maxFiles: 10 }));
 	server.applyMiddleware({ app, cors: true, path: '/' });
 };
 export default graphQlServer;

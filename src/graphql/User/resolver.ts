@@ -1,8 +1,16 @@
 import { Resolver, Arg, Query, Mutation, Authorized } from 'type-graphql';
-import { User, UserModel } from '../../models/User';
 
-import { RegisterUserInput, EditUserInput } from './input';
-import { Roles } from '../../shared/auth-checker';
+import { User, UserModel } from '../../models/User';
+import {
+	RegisterUserInput,
+	EditUserInput,
+	UploadUserImageInput,
+	UploadMultipleImageInput,
+} from './input';
+import shared from '../../shared';
+
+const { uploads, authChecker } = shared;
+const { Roles } = authChecker;
 
 @Resolver()
 export class UserResolver {
@@ -26,6 +34,7 @@ export class UserResolver {
 				phoneNumber,
 				isAdmin,
 				authoId,
+				imageUrl: ['jajjaja', 'allals'],
 			});
 
 			if (userCreated) {
@@ -41,6 +50,37 @@ export class UserResolver {
 	@Mutation(() => User)
 	async editUser(@Arg('id') id: string, @Arg('input') input: EditUserInput): Promise<User> {
 		const user = await UserModel.findByIdAndUpdate(id, input, { new: true });
+		if (user) {
+			return user;
+		}
+		throw new Error('User does not created');
+	}
+
+	// @Mutation(() => User)
+	// async uploadUserImage(@Arg('input') input: UploadUserImageInput): Promise<User> {
+	// 	const { id, uploadImage } = input;
+
+	// 	const { url: imageUrl } = await uploads(uploadImage);
+	// 	const user = await UserModel.findByIdAndUpdate(id, { imageUrl }, { new: true });
+	// 	if (user) {
+	// 		return user;
+	// 	}
+	// 	throw new Error('User does not created');
+	// }
+
+	@Mutation(() => User)
+	async multipleUserUpload(@Arg('input') input: UploadMultipleImageInput): Promise<User> {
+		const { id, uploadImages } = input;
+
+		const promises = uploadImages.map(uploadImage => uploads(uploadImage));
+
+		const imageResponses = await Promise.all(promises);
+
+		const imageUrls = imageResponses.map(({ url }) => url);
+
+		console.log({ imageUrls });
+
+		const user = await UserModel.findByIdAndUpdate(id, { imageUrls }, { new: true });
 		if (user) {
 			return user;
 		}

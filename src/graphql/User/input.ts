@@ -1,6 +1,8 @@
-import { InputType, Field } from 'type-graphql';
+import { InputType, Field, ID } from 'type-graphql';
 import { Length, IsEmail, IsPhoneNumber } from 'class-validator';
 import { User } from '../../models/User';
+
+import { GraphQLUpload, FileUpload } from 'graphql-upload';
 
 @InputType()
 export class RegisterUserInput implements Partial<User> {
@@ -57,4 +59,20 @@ export class ResetPasswordInput {
 
 	@Field({ nullable: false })
 	newPassword: string;
+}
+@InputType()
+export class UploadUserImageInput {
+	@Field(() => ID, { nullable: false })
+	readonly id: string;
+
+	@Field(() => GraphQLUpload, { nullable: false })
+	readonly uploadImage: FileUpload;
+}
+@InputType()
+export class UploadMultipleImageInput {
+	@Field(() => ID, { nullable: false })
+	readonly id: string;
+
+	@Field(() => [GraphQLUpload], { nullable: false })
+	readonly uploadImages: FileUpload[];
 }

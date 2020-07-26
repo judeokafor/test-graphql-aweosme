@@ -30,5 +30,9 @@ export class User {
 	@Field(() => ID)
 	@Property({ required: true })
 	authoId: string;
+
+	@Field({ nullable: true })
+	@Property({ required: true })
+	imageUrl: string[];
 }
 export const UserModel = getModelForClass(User);
