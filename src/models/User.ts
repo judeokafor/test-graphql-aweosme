@@ -31,7 +31,7 @@ export class User {
 	@Property({ required: true })
 	authoId: string;
 
-	@Field({ nullable: true })
+	@Field(() => [String], { nullable: true })
 	@Property({ required: true })
 	imageUrl: string[];
 }

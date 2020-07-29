@@ -12,8 +12,8 @@ input EditUserInput {
 type Mutation {
   createPropertyListing(input: PropertyListingInput!): PropertyListing!
   editUser(id: String!, input: EditUserInput!): User!
+  multipleUserUpload(input: UploadMultipleImageInput!): User!
   registerUser(input: RegisterUserInput!): User!
-  uploadUserImage(input: UploadUserImageInput!): Boolean!
 }
 
 """The PropertyListing model"""
@@ -46,9 +46,9 @@ input RegisterUserInput {
 """The `Upload` scalar type represents a file upload."""
 scalar Upload
 
-input UploadUserImageInput {
+input UploadMultipleImageInput {
   id: ID!
-  uploadImage: Upload!
+  uploadImages: [Upload!]!
 }
 
 """The User model"""
@@ -57,7 +57,7 @@ type User {
   email: String
   firstName: String!
   id: ID!
-  imageUrl: String
+  imageUrl: [String!]
   isAdmin: Boolean!
   lastName: String!
   phoneNumber: String!

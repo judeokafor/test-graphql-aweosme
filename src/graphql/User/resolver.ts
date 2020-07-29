@@ -1,16 +1,21 @@
-import { Resolver, Arg, Query, Mutation, Authorized } from 'type-graphql';
+import { Resolver, Arg, Query, Mutation, Authorized, Subscription, Root } from 'type-graphql';
 
 import { User, UserModel } from '../../models/User';
 import {
 	RegisterUserInput,
 	EditUserInput,
-	UploadUserImageInput,
+	// UploadUserImageInput,
 	UploadMultipleImageInput,
 } from './input';
 import shared from '../../shared';
 
 const { uploads, authChecker } = shared;
 const { Roles } = authChecker;
+
+export interface NotificationPayload {
+	id: number;
+	message?: string;
+}
 
 @Resolver()
 export class UserResolver {
@@ -85,5 +90,24 @@ export class UserResolver {
 			return user;
 		}
 		throw new Error('User does not created');
+	}
+
+	@Subscription({
+		topics: 'USERS',
+		filter: ({ payload, args }) => args.priorities.includes(payload.priority),
+	})
+	newNotification(
+		@Root() notificationPayload: NotificationPayload,
+		@Args() args: NewNotificationsArgs
+	): Notification {
+		return {
+			...notificationPayload,
+			date: new Date(),
+		};
+	}
+
+	@Subscription({ topics: 'USERS' })
+	normalSubscription(@Root() { id, message }: NotificationPayload): Notification {
+		return { id, message, date: new Date() };
 	}
 }
