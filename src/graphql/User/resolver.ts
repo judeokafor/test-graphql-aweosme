@@ -1,6 +1,19 @@
-import { Resolver, Arg, Query, Mutation, Authorized, Subscription, Root } from 'type-graphql';
+import {
+	Resolver,
+	Arg,
+	Query,
+	Mutation,
+	Authorized,
+	PubSub,
+	Publisher,
+	Subscription,
+	Root,
+	ResolverFilterData,
+} from 'type-graphql';
 
-import { User, UserModel } from '../../models/User';
+import { PubSubEngine } from 'graphql-subscriptions';
+
+import { User, UserModel, Notification, NotificationPayload } from '../../models/User';
 import {
 	RegisterUserInput,
 	EditUserInput,
@@ -19,6 +32,8 @@ export interface NotificationPayload {
 
 @Resolver()
 export class UserResolver {
+	private autoIncrement = 0;
+
 	@Query(() => User, { nullable: false })
 	async fetchSingleUser(@Arg('id') id: string) {
 		return await UserModel.findById(id);
@@ -92,22 +107,60 @@ export class UserResolver {
 		throw new Error('User does not created');
 	}
 
-	@Subscription({
-		topics: 'USERS',
-		filter: ({ payload, args }) => args.priorities.includes(payload.priority),
-	})
-	newNotification(
-		@Root() notificationPayload: NotificationPayload,
-		@Args() args: NewNotificationsArgs
-	): Notification {
-		return {
-			...notificationPayload,
-			date: new Date(),
-		};
+	// testing subscriptions
+	@Mutation(() => Boolean)
+	async pubSubMutation(
+		@PubSub() pubSub: PubSubEngine,
+		@Arg('message', { nullable: true }) message?: string
+	): Promise<boolean> {
+		const payload: NotificationPayload = { id: ++this.autoIncrement, message };
+		await pubSub.publish('NOTIFICATIONS', payload);
+		return true;
 	}
 
-	@Subscription({ topics: 'USERS' })
+	@Mutation(() => Boolean)
+	async publisherMutation(
+		@PubSub('NOTIFICATIONS') publish: Publisher<NotificationPayload>,
+		@Arg('message', { nullable: true }) message?: string
+	): Promise<boolean> {
+		await publish({ id: ++this.autoIncrement, message });
+		return true;
+	}
+
+	@Subscription({ topics: 'NOTIFICATIONS' })
 	normalSubscription(@Root() { id, message }: NotificationPayload): Notification {
 		return { id, message, date: new Date() };
 	}
+
+	@Subscription(() => Notification, {
+		topics: 'NOTIFICATIONS',
+		filter: ({ payload }: ResolverFilterData<NotificationPayload>) => payload.id % 2 === 0,
+	})
+	subscriptionWithFilter(@Root() { id, message }: NotificationPayload) {
+		const newNotification: Notification = { id, message, date: new Date() };
+		return newNotification;
+	}
+
+	// dynamic topic
+
+	@Mutation(() => Boolean)
+	async pubSubMutationToDynamicTopic(
+		@PubSub() pubSub: PubSubEngine,
+		@Arg('topic') topic: string,
+		@Arg('message', { nullable: true }) message?: string
+	): Promise<boolean> {
+		const payload: NotificationPayload = { id: ++this.autoIncrement, message };
+		await pubSub.publish(topic, payload);
+		return true;
+	}
+
+	// @Subscription({
+	// 	topics: ({ args }) => args.topic,
+	// })
+	// subscriptionWithFilterToDynamicTopic(
+	// 	@Arg('topic') topic: string,
+	// 	@Root() { id, message }: NotificationPayload
+	// ): Notification {
+	// 	return { id, message, date: new Date() };
+	// }
 }
