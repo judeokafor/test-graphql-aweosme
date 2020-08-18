@@ -20,7 +20,7 @@ const graphQlServer = async (app: any, PORT: string | number) => {
 	});
 
 	// create mongoose connection
-	const mongoose = await connect('mongodb://patDev:planks123@ds037508.mlab.com:37508/linkup', {
+	const mongoose = await connect('mongodb://localhost:27017/ligare', {
 		useNewUrlParser: true,
 		useUnifiedTopology: true,
 		useCreateIndex: true,
@@ -36,7 +36,9 @@ const graphQlServer = async (app: any, PORT: string | number) => {
 		introspection: true,
 		playground: true,
 		subscriptions: {
-			onConnect: () => console.log('Connected to websocket 😤'),
+			onConnect: () => {
+				console.log('Connected to websocket 😤');
+			},
 		},
 	});
 	server.applyMiddleware({ app, cors: true, path: '/' });

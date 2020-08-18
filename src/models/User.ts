@@ -7,7 +7,7 @@ export class User {
 	@Property({ required: false })
 	id: string;
 
-	@Field({ nullable: true })
+	@Field({ nullable: false })
 	@Property({ required: true, trim: true })
 	email: string;
 
@@ -47,9 +47,4 @@ export class Notification {
 
 	@Field(() => Date)
 	date: Date;
-}
-
-export interface NotificationPayload {
-	id: number;
-	message?: string;
 }

@@ -3,11 +3,6 @@
 # !!!   DO NOT MODIFY THIS FILE BY YOURSELF   !!!
 # -----------------------------------------------
 
-"""
-The javascript `Date` as string. Type represents date and time as the ISO Date string.
-"""
-scalar DateTime
-
 input EditUserInput {
   firstName: String
   lastName: String
@@ -18,16 +13,7 @@ type Mutation {
   createPropertyListing(input: PropertyListingInput!): PropertyListing!
   editUser(id: String!, input: EditUserInput!): User!
   multipleUserUpload(input: UploadMultipleImageInput!): User!
-  publisherMutation(message: String): Boolean!
-  pubSubMutation(message: String): Boolean!
-  pubSubMutationToDynamicTopic(message: String, topic: String!): Boolean!
   registerUser(input: RegisterUserInput!): User!
-}
-
-type Notification {
-  date: DateTime!
-  id: ID!
-  message: String
 }
 
 """The PropertyListing model"""
@@ -58,8 +44,7 @@ input RegisterUserInput {
 }
 
 type Subscription {
-  normalSubscription: Notification!
-  subscriptionWithFilter: Notification!
+  userSubscription: User!
 }
 
 """The `Upload` scalar type represents a file upload."""
@@ -73,7 +58,7 @@ input UploadMultipleImageInput {
 """The User model"""
 type User {
   authoId: ID!
-  email: String
+  email: String!
   firstName: String!
   id: ID!
   imageUrl: [String!]
